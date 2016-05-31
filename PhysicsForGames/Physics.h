@@ -5,8 +5,11 @@
 #include "Camera.h"
 #include "Render.h"
 
+#include <vector>
 #include <PxPhysicsAPI.h>
 #include <PxScene.h>
+
+class PhysicsObject;
 
 using namespace physx;
 class Physics : public Application
@@ -22,6 +25,9 @@ public:
     Renderer* m_renderer;
     FlyCamera m_camera;
     float m_delta_time;
+
+	std::vector<PhysicsObject*> actors;
+	glm::vec3 gravity;
 };
 
 

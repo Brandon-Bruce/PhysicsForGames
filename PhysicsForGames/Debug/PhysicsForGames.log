@@ -1,4 +1,2 @@
-﻿  Application.cpp
-c:\users\brandon.bruce\desktop\physicsforgamesvs2015_start\physicsforgames\application.cpp(133): warning C4996: '_snprintf': This function or variable may be unsafe. Consider using _snprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1952): note: see declaration of '_snprintf'
-  PhysicsForGames.vcxproj -> C:\Users\brandon.bruce\Desktop\PhysicsForGamesvs2015_Start\Debug\PhysicsForGames.exe
+﻿  Physics.cpp
+  PhysicsForGames.vcxproj -> C:\Users\brandon.bruce\Documents\PhysicsForGames\Debug\PhysicsForGames.exe

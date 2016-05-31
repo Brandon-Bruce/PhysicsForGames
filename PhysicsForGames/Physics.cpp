@@ -7,6 +7,9 @@
 #include "glm/ext.hpp"
 #include "glm/gtc/quaternion.hpp"
 
+#include "PhysicsObject.h"
+#include "Sphere.h"
+
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
 
@@ -27,13 +30,22 @@ bool Physics::startup()
 
 	m_renderer = new Renderer();
 
-	//Make Objects
+	// Initiate gravity
+	gravity = glm::vec3(0, -1, 0);
+
+	//Make Actors
+	Sphere* sphere;
+	sphere = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 5, 5);
+	actors.push_back(sphere);
 	
     return true;
 }
 
 void Physics::shutdown()
 {
+	for (unsigned int i = 0; i < actors.size(); ++i)
+		delete actors[i];
+
 	delete m_renderer;
     Gizmos::destroy();
     Application::shutdown();
@@ -51,6 +63,14 @@ bool Physics::update()
     float dt = (float)glfwGetTime();
     m_delta_time = dt;
     glfwSetTime(0.0);
+
+	// Update Actors
+	for (unsigned int i = 0; i < actors.size(); ++i)
+		actors[i]->Update(gravity, m_delta_time);
+
+	// Add gizmos fro objects
+	for (unsigned int i = 0; i < actors.size(); ++i)
+		actors[i]->MakeGizmo();
 
     vec4 white(1);
     vec4 black(0, 0, 0, 1);

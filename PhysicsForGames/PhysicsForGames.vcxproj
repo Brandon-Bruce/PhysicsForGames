@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>.\physx;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);.\physx;$(IncludePath)</IncludePath>
     <LibraryPath>.\lib\glfw;.\lib\physx;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -80,7 +80,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>.\lib\glfw;.\lib\physx;$(LibraryPath)</LibraryPath>
-    <IncludePath>./physx;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);./physx;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -157,11 +157,10 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleFluidEmitter.h" />
     <ClInclude Include="Physics.h" />
-    <ClInclude Include="Physics\PhysicObjects\PhysicsObject.h" />
-    <ClInclude Include="Physics\PhysicObjects\Plane.h" />
-    <ClInclude Include="Physics\PhysicObjects\RigidBody\DIYRigidBody.h" />
-    <ClInclude Include="Physics\PhysicObjects\RigidBody\Sphere.h" />
-    <ClInclude Include="Physics\PhysicsScene.h" />
+    <ClInclude Include="Physics\PhysicsObjects\PhysicsObject.h" />
+    <ClInclude Include="Physics\PhysicsObjects\Plane.h" />
+    <ClInclude Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.h" />
+    <ClInclude Include="Physics\PhysicsObjects\RigidBody\Sphere.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />
@@ -175,11 +174,10 @@
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleFluidEmitter.cpp" />
     <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="Physics\PhysicObjects\PhysicsObject.cpp" />
-    <ClCompile Include="Physics\PhysicObjects\Plane.cpp" />
-    <ClCompile Include="Physics\PhysicObjects\RigidBody\DIYRigidBody.cpp" />
-    <ClCompile Include="Physics\PhysicObjects\RigidBody\Sphere.cpp" />
-    <ClCompile Include="Physics\PhysicsScene.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\PhysicsObject.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\Plane.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\RigidBody\Sphere.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

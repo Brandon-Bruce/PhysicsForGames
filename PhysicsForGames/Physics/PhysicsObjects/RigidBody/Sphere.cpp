@@ -12,7 +12,7 @@ Sphere::Sphere(glm::vec4 colour,
 
 void Sphere::MakeGizmo()
 {
-	Gizmos::addSphere(position, radius, radius * 10, radius * 10, colour);
+	Gizmos::addSphere(position, radius, (int)radius * 10, (int)radius * 10, colour);
 }
 
 Sphere::~Sphere()
