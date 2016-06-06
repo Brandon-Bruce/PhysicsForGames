@@ -12,6 +12,8 @@ public:
 	virtual void MakeGizmo();
 	~Sphere();
 
+	float GetRadius() { return radius; }
+
 private:
 	float radius;
 };

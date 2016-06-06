@@ -16,7 +16,10 @@ public:
 	virtual void MakeGizmo();
 	void ApplyForce(glm::vec3 force);
 	void ApplyForceToActor(DIYRigidBody* actor2, glm::vec3 force);
+	void ResetVolocity();
 	~DIYRigidBody();
+
+	glm::vec3 GetPosition() { return position; }
 
 protected:
 	glm::vec3 position;

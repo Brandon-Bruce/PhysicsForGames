@@ -21,6 +21,7 @@ public:
     virtual void draw();
 
 	void renderGizmos(PxScene* physics_scene);
+	void CheckForCollisions();
 
     Renderer* m_renderer;
     FlyCamera m_camera;

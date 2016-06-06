@@ -35,6 +35,11 @@ void DIYRigidBody::ApplyForceToActor(DIYRigidBody* actor2, glm::vec3 force)
 	actor2->ApplyForce(force);
 }
 
+void DIYRigidBody::ResetVolocity()
+{
+	velocity = glm::vec3(0, 0, 0);
+}
+
 DIYRigidBody::~DIYRigidBody()
 {
 

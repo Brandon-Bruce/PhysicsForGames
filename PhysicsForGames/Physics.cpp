@@ -9,6 +9,9 @@
 
 #include "PhysicsObject.h"
 #include "Sphere.h"
+#include "Plane.h"
+
+#include "CollisionChecker.h"
 
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
@@ -31,12 +34,19 @@ bool Physics::startup()
 	m_renderer = new Renderer();
 
 	// Initiate gravity
-	gravity = glm::vec3(0, -1, 0);
+	gravity = glm::vec3(0, 0, 0);
 
 	//Make Actors
-	Sphere* sphere;
-	sphere = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 5, 5);
-	actors.push_back(sphere);
+	Sphere* sphere1;
+	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5, 1);
+	actors.push_back(sphere1);
+	Sphere* sphere2;
+	sphere2 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(-1, 0, 0), 5, 1);
+	actors.push_back(sphere2);
+
+	Plane* plane;
+	plane = new Plane(glm::vec4(1, 1, 1, 1), glm::vec2(0.f, 60.f), 10);
+	actors.push_back(plane);
 	
     return true;
 }
@@ -72,6 +82,9 @@ bool Physics::update()
 	for (unsigned int i = 0; i < actors.size(); ++i)
 		actors[i]->MakeGizmo();
 
+	//check for collisions
+	CheckForCollisions();
+
     vec4 white(1);
     vec4 black(0, 0, 0, 1);
 
@@ -94,6 +107,11 @@ void Physics::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
     Gizmos::draw(m_camera.proj, m_camera.view);
+
+	int width = 0, height = 0;
+	glfwGetWindowSize(m_window, &width, &height);
+	glm::mat4 guiMatrix = glm::ortho<float>(0, (float)width, (float)height, 0);
+	Gizmos::draw2D(guiMatrix);
 
     m_renderer->RenderAndClear(m_camera.view_proj);
 
@@ -205,3 +223,25 @@ void Physics::renderGizmos(PxScene* physics_scene)
     }
 }
 
+void Physics::CheckForCollisions()
+{
+	unsigned int actorCount = actors.size();
+	//check for collisons against all other objects
+	for (unsigned int outer = 0; outer < actorCount - 1; ++outer)
+	{
+		for (unsigned int inner = outer + 1; inner < actorCount; ++inner)
+		{
+			PhysicsObject* object1 = actors[outer];
+			PhysicsObject* object2 = actors[inner];
+			int _shapeID1 = object1->GetShapeID();
+			int _shapeID2 = object2->GetShapeID();
+			// using function pointers
+			int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2;
+			fn collisionFucntionPtr = CollisionChecker::CollisionFunctionArray[functionIndex];
+			if (collisionFucntionPtr != nullptr)
+			{
+				collisionFucntionPtr(object1, object2);
+			}
+		}
+	}
+}

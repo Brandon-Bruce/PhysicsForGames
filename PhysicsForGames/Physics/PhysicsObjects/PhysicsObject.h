@@ -21,6 +21,8 @@ public:
 	virtual void ResetPosition() {};
 	~PhysicsObject();
 
+	int GetShapeID() { return shapeID; }
+
 protected:
 	ShapeType shapeID;
 	glm::vec4 colour;
