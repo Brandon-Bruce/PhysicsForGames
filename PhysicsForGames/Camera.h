@@ -8,7 +8,6 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
-
 class Camera
 {
 public:
@@ -42,7 +41,6 @@ public:
 
 	float yaw;
 	float pitch;
-
 	bool m_clicked_down;
 };
 

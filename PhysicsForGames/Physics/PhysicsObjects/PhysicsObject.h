@@ -14,7 +14,7 @@ enum ShapeType
 class PhysicsObject
 {
 public:
-	PhysicsObject(ShapeType shapeID, glm::vec4 colour);
+	PhysicsObject(ShapeType shapeID, glm::vec4 color);
 	virtual void Update(glm::vec3 gravity, float deltaTime) = 0;
 	virtual void Debug() = 0;
 	virtual void MakeGizmo() = 0;
@@ -25,7 +25,7 @@ public:
 
 protected:
 	ShapeType shapeID;
-	glm::vec4 colour;
+	glm::vec4 color;
 };
 
 #endif

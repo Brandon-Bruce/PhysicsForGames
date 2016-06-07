@@ -1,7 +1,7 @@
 #ifndef COLLISIONCHECKER_H
 #define COLLISIONCHECKER_H
 
-#define NUMBERSHAPE 2
+#define NUMBERSHAPE 3
 
 class PhysicsObject;
 
@@ -12,9 +12,15 @@ class CollisionChecker
 {
 public:
 	static bool Plane2Sphere(PhysicsObject* obj1, PhysicsObject* obj2);
+	static bool Plane2Box(PhysicsObject* obj1, PhysicsObject* obj2);
 
 	static bool Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2);
 	static bool Sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2);
+	static bool Sphere2Box(PhysicsObject* obj1, PhysicsObject* obj2);
+
+	static bool Box2Plane(PhysicsObject* obj1, PhysicsObject* obj2);
+	static bool Box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2);
+	static bool Box2Box(PhysicsObject* obj1, PhysicsObject* obj2);
 
 	static fn CollisionFunctionArray[];
 };

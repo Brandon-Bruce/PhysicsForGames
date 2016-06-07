@@ -39,8 +39,12 @@ void Camera::setPosition(vec3 pos)
 
 vec3 Camera::pickAgainstPlane(float x, float y, vec4 plane)
 {
-    float nxPos = x / 1280.0f; //replace these with your screen width and height
-    float nyPos = y / 720.0f;
+	GLFWwindow* curr_window = glfwGetCurrentContext();
+	int width = 0, height = 0;
+	glfwGetWindowSize(curr_window, &width, &height);
+
+    float nxPos = x / width; //replace these with your screen width and height
+    float nyPos = y / height;
 
     float sxPos = nxPos - 0.5f;
     float syPos = nyPos - 0.5f;

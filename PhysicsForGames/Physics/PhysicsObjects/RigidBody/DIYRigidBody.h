@@ -20,6 +20,10 @@ public:
 	~DIYRigidBody();
 
 	glm::vec3 GetPosition() { return position; }
+	glm::vec3 GetVelocity() { return velocity; }
+	float GetMass() { return mass; }
+
+	void Move(glm::vec3 pos) { position += pos; }
 
 protected:
 	glm::vec3 position;
