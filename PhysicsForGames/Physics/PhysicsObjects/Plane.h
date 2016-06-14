@@ -17,7 +17,7 @@ public:
 	virtual void MakeGizmo();
 	~Plane();
 
-	glm::vec3 GetNormal() { return glm::vec3(normal); }
+	glm::vec3 GetNormal() { return glm::vec3(normal.x, normal.y, normal.z); }
 	float GetDistance() { return normal.w; }
 
 private:

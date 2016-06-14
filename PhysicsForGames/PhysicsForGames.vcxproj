@@ -158,12 +158,13 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleFluidEmitter.h" />
     <ClInclude Include="Physics.h" />
-    <ClInclude Include="Physics\PhysicsObjects\CollisionChecker.h" />
+    <ClInclude Include="Physics\CollisionChecker.h" />
     <ClInclude Include="Physics\PhysicsObjects\PhysicsObject.h" />
     <ClInclude Include="Physics\PhysicsObjects\Plane.h" />
     <ClInclude Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.h" />
     <ClInclude Include="Physics\PhysicsObjects\RigidBody\Sphere.h" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="Physics\PhysicsObjects\SpringJoint.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
@@ -177,12 +178,13 @@
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleFluidEmitter.cpp" />
     <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="Physics\PhysicsObjects\CollisionChecker.cpp" />
+    <ClCompile Include="Physics\CollisionChecker.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\PhysicsObject.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\Plane.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\RigidBody\Sphere.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\SpringJoint.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

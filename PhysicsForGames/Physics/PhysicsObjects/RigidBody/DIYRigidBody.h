@@ -10,7 +10,7 @@ class DIYRigidBody : public PhysicsObject
 {
 public:
 	DIYRigidBody(ShapeType shapeID, glm::vec4 colour,
-		glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float mass);
+		glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float mass, bool staticObject);
 	virtual void Update(glm::vec3 gravity, float deltaTime);
 	virtual void Debug();
 	virtual void MakeGizmo();
@@ -31,6 +31,7 @@ protected:
 	glm::vec3 velocity;
 
 	float mass;
+	bool staticObject;
 };
 
 #endif

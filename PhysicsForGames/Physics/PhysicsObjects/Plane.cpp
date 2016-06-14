@@ -10,7 +10,7 @@ Plane::Plane(glm::vec4 colour, glm::vec3 normal, float distance, FlyCamera* came
 	PhysicsObject(ShapeType::PLANE, colour),
 	camera(camera)
 {
-	this->normal = glm::vec4(glm::normalize(normal), 0);
+	this->normal = glm::vec4(glm::normalize(normal), distance);
 	//CalulateDrawArea();
 }
 
