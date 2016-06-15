@@ -1,2 +1,21 @@
-﻿  Physics.cpp
-  PhysicsForGames.vcxproj -> C:\Users\brandon.bruce\Documents\PhysicsForGames\Debug\PhysicsForGames.exe
+﻿  Plane.cpp
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\physicsobjects\plane.cpp(45): error C2374: 'start': redefinition; multiple initialization
+  c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\physicsobjects\plane.cpp(41): note: see declaration of 'start'
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\physicsobjects\plane.cpp(46): error C2374: 'end': redefinition; multiple initialization
+  c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\physicsobjects\plane.cpp(42): note: see declaration of 'end'
+  CollisionChecker.cpp
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2653: 'glm': is not a class or namespace name
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C3646: 'CalculateForceVector': unknown override specifier
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2065: 'obj1': undeclared identifier
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2275: 'PhysicsObject': illegal use of this type as an expression
+  c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(6): note: see declaration of 'PhysicsObject'
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2065: 'obj2': undeclared identifier
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2065: 'vec3': undeclared identifier
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2146: syntax error: missing ')' before identifier 'normal'
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(14): error C2238: unexpected token(s) preceding ';'
+c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.cpp(15): error C2039: 'CalculateForceVector': is not a member of 'CollisionChecker'
+  c:\users\brandon.bruce\documents\physicsforgames\physicsforgames\physics\collisionchecker.h(12): note: see declaration of 'CollisionChecker'
+  Generating Code...
+  Compiling...
+  Physics.cpp
+  Generating Code...

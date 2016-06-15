@@ -19,24 +19,12 @@ public:
 
 	glm::vec3 GetNormal() { return glm::vec3(normal.x, normal.y, normal.z); }
 	float GetDistance() { return normal.w; }
+	float GetMass() { return 0; }
 
 private:
-	void CalulateDrawArea();
 
 	glm::vec4 normal;
 	FlyCamera* camera;
-
-	////for drawing
-	//glm::vec3 topLeft;
-	//glm::vec3 topRight;
-	//glm::vec3 bottomLeft;
-	//glm::vec3 bottomRight;
-
-	////direction to move when drawing grid
-	//glm::vec3 topDirection;
-	//glm::vec3 bottomDirection;
-	//glm::vec3 leftDirection;
-	//glm::vec3 rightDirection;
 };
 
 #endif

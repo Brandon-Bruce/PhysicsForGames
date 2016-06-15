@@ -17,17 +17,19 @@ public:
 	void ApplyForce(glm::vec3 force);
 	void ApplyForceToActor(DIYRigidBody* actor2, glm::vec3 force);
 	void ResetVolocity();
+	void SetVelocity(glm::vec3 newVel) { velocity = newVel;  }
+	void Move(glm::vec3 pos);
 	~DIYRigidBody();
 
 	glm::vec3 GetPosition() { return position; }
 	glm::vec3 GetVelocity() { return velocity; }
-	float GetMass() { return mass; }
+	float GetMass() { return 1 / mass; }
 
-	void Move(glm::vec3 pos) { position += pos; }
 
 protected:
 	glm::vec3 position;
 	glm::vec3 rotation;
+	glm::vec3 acceleration;
 	glm::vec3 velocity;
 
 	float mass;

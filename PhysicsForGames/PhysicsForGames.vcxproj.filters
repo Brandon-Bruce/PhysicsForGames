@@ -60,13 +60,7 @@
     <ClInclude Include="Physics\PhysicsObjects\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\PhysicsObjects\RigidBody\Box.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Physics\CollisionChecker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics\PhysicsObjects\SpringJoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -110,13 +104,7 @@
     <ClCompile Include="Physics\PhysicsObjects\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Physics\PhysicsObjects\RigidBody\Box.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Physics\CollisionChecker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics\PhysicsObjects\SpringJoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

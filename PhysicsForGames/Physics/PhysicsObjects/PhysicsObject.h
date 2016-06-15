@@ -23,6 +23,9 @@ public:
 
 	int GetShapeID() { return shapeID; }
 
+	virtual float GetMass() = 0;
+	virtual glm::vec3
+
 protected:
 	ShapeType shapeID;
 	glm::vec4 color;

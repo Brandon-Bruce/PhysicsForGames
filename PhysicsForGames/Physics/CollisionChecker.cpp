@@ -12,6 +12,15 @@ fn CollisionChecker::CollisionFunctionArray[] =
 	CollisionChecker::Box2Plane, CollisionChecker::Box2Sphere, CollisionChecker::Box2Box
 };
 
+glm::vec3 CollisionChecker::CalculateForceVector(PhysicsObject* obj1, PhysicsObject* obj2, float overLap, glm::vec3 normal)
+{
+	const float coefficientOfRestitution = 0.5f;
+	glm::vec3 relative = obj1 - velocity1;
+	float velocityAlongNormal = glm::dot
+
+	return glm::vec3();
+}
+
 bool CollisionChecker::Plane2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	return Sphere2Plane(obj2, obj1);
@@ -89,7 +98,10 @@ bool CollisionChecker::Sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 			glm::vec3 collisionVector = collisionNormal * (glm::dot(relativeVelocity, collisionNormal));
 			glm::vec3 forceVector = collisionVector * 1.f / (1 / sphere1->GetMass() + 1 / sphere2->GetMass());
 			// use newtons third law to apply collision forces to colliding bodies
-			sphere1->ApplyForceToActor(sphere2, 2 * forceVector);
+			//sphere1->ApplyForceToActor(sphere2, 2 * forceVector);
+			sphere1->SetVelocity(-forceVector);
+			sphere2->SetVelocity(forceVector);
+
 			//move spheres out of collision
 			glm::vec3 seperationVector = collisionNormal * intersection * 0.5f;
 			sphere1->Move(-seperationVector);

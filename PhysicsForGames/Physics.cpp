@@ -34,14 +34,14 @@ bool Physics::startup()
 	m_renderer = new Renderer();
 
 	// Initiate gravity
-	gravity = glm::vec3(0, -1, 0);
+	gravity = glm::vec3(0, -0.0001, 0);
 
 	//Make Actors
 	Sphere* sphere1;
-	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5, 1);
+	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5, true, 1);
 	actors.push_back(sphere1);
 	Sphere* sphere2;
-	sphere2 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(-1, 0, 0), 5, 1);
+	sphere2 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(-1, 0, 0), 5, false, 1);
 	actors.push_back(sphere2);
 
 	Plane* plane;
