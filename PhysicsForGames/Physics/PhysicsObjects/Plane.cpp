@@ -42,8 +42,8 @@ void Plane::MakeGizmo()
 	glm::vec3 end = centrePoint - (parallel1 * lineSegmentLength);
 	Gizmos::addLine(start, end, color);
 
-	glm::vec3 start = centrePoint + (parallel2 * lineSegmentLength);
-	glm::vec3 end = centrePoint - (parallel2 * lineSegmentLength);
+	start = centrePoint + (parallel2 * lineSegmentLength);
+	end = centrePoint - (parallel2 * lineSegmentLength);
 	Gizmos::addLine(start, end, color);
 }
 

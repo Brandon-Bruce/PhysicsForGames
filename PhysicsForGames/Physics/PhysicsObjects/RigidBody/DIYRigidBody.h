@@ -24,7 +24,7 @@ public:
 	glm::vec3 GetPosition() { return position; }
 	glm::vec3 GetVelocity() { return velocity; }
 	float GetMass() { return 1 / mass; }
-
+	void AddVelocity(glm::vec3 vel) { velocity += vel; };
 
 protected:
 	glm::vec3 position;

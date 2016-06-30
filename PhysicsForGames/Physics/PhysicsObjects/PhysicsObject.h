@@ -24,7 +24,9 @@ public:
 	int GetShapeID() { return shapeID; }
 
 	virtual float GetMass() = 0;
-	virtual glm::vec3
+	virtual glm::vec3 GetVelocity() = 0;
+	virtual void AddVelocity(glm::vec3 vel) = 0;
+	virtual void Move(glm::vec3 pos) = 0;
 
 protected:
 	ShapeType shapeID;

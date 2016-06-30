@@ -12,13 +12,32 @@ fn CollisionChecker::CollisionFunctionArray[] =
 	CollisionChecker::Box2Plane, CollisionChecker::Box2Sphere, CollisionChecker::Box2Box
 };
 
-glm::vec3 CollisionChecker::CalculateForceVector(PhysicsObject* obj1, PhysicsObject* obj2, float overLap, glm::vec3 normal)
+void CollisionChecker::Seperate(PhysicsObject* obj1, PhysicsObject* obj2, float overlap, glm::vec3 normal)
 {
-	const float coefficientOfRestitution = 0.5f;
-	glm::vec3 relative = obj1 - velocity1;
-	float velocityAlongNormal = glm::dot
+	float totalMass = obj1->GetMass() + obj2->GetMass();
+	float massRatio1 = obj1->GetMass() / totalMass;
+	float massRatio2 = obj2->GetMass() / totalMass;
 
-	return glm::vec3();
+	//seperate relative to mass of objects
+	glm::vec3 separationVec = normal * overlap;
+	obj1->Move(-separationVec * massRatio2);
+	obj2->Move(separationVec * massRatio1);
+}
+
+void CollisionChecker::CalculateResponse(PhysicsObject* obj1, PhysicsObject* obj2, float overLap, glm::vec3 normal)
+{
+	Seperate(obj1, obj2, overLap, normal);
+
+	const float coefficientOfRestitution = 0.5f;
+
+	glm::vec3 relativeVel = obj2->GetVelocity() - obj1->GetVelocity();
+	float velocityAlongNormal = glm::dot(relativeVel, normal);
+	float impulseAmount = -(1 - coefficientOfRestitution) * velocityAlongNormal;
+	impulseAmount /= 1 / obj1->GetMass() + 1 / obj2->GetMass();
+
+	glm::vec3 impulse = impulseAmount * normal;
+	obj1->AddVelocity(1 / obj1->GetMass() * -impulse);
+	obj2->AddVelocity(1 / obj2->GetMass() * +impulse);
 }
 
 bool CollisionChecker::Plane2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
@@ -47,7 +66,7 @@ bool CollisionChecker::Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 	{
 		glm::vec3 planeNormal = plane->GetNormal();
 		glm::vec3 collisionNormal = planeNormal;
-		float sphereToPlane = glm::dot(sphere->GetPosition(), planeNormal) - plane->GetDistance();
+		float sphereToPlane = glm::dot(sphere->GetPosition(), planeNormal);
 
 		// if behind plane flip normal
 		if (sphereToPlane < 0)
@@ -57,19 +76,10 @@ bool CollisionChecker::Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		}
 
 		//check if sphere radius is bigger then distance to plane
-		float intersection = sphere->GetRadius() - sphereToPlane;
+		float intersection = (sphere->GetRadius() + plane->GetDistance()) - sphereToPlane;
 		if (intersection > 0)
 		{
-			// find point where collision occured
-
-			//flip plane normal if we are behind
-			if (sphereToPlane < 0)
-				planeNormal *= -1;
-
-			glm::vec3 forceVector = -1 * sphere->GetMass() * planeNormal *
-				(glm::dot(planeNormal, sphere->GetVelocity()));
-			sphere->ApplyForce(2 * forceVector);
-			sphere->Move(collisionNormal * intersection *0.5f);
+			CalculateResponse(obj1, obj2, intersection, planeNormal);
 			return true;
 		}
 	}
@@ -93,19 +103,7 @@ bool CollisionChecker::Sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = totalRadius - distanceApart;
 		if (intersection > 0)
 		{
-			glm::vec3 collisionNormal = glm::normalize(delta);
-			glm::vec3 relativeVelocity = sphere1->GetVelocity() - sphere2->GetVelocity();
-			glm::vec3 collisionVector = collisionNormal * (glm::dot(relativeVelocity, collisionNormal));
-			glm::vec3 forceVector = collisionVector * 1.f / (1 / sphere1->GetMass() + 1 / sphere2->GetMass());
-			// use newtons third law to apply collision forces to colliding bodies
-			//sphere1->ApplyForceToActor(sphere2, 2 * forceVector);
-			sphere1->SetVelocity(-forceVector);
-			sphere2->SetVelocity(forceVector);
-
-			//move spheres out of collision
-			glm::vec3 seperationVector = collisionNormal * intersection * 0.5f;
-			sphere1->Move(-seperationVector);
-			sphere2->Move(seperationVector);
+			CalculateResponse(obj1, obj2, intersection, glm::normalize(delta));
 			return true;
 		}
 	}
