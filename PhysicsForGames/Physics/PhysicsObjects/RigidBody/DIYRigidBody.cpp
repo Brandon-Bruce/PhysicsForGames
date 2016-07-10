@@ -1,10 +1,14 @@
 #include "DIYRigidBody.h"
 
+#include <glm\ext.hpp>
+#include <assert.h>
+
 DIYRigidBody::DIYRigidBody(ShapeType shapeID, glm::vec4 colour,
-	glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float mass, bool staticObject) :
+	glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float maxSpeed, float mass, bool staticObject) :
 	PhysicsObject(shapeID, colour),
-	position(position), rotation(rotation), velocity(velocity), mass(mass), staticObject(staticObject)
+	position(position), rotation(rotation), velocity(velocity), maxSpeed(maxSpeed), mass(mass)
 {
+	this->staticObject = staticObject;
 	if (staticObject == true)
 	{
 		velocity = glm::vec3(0,0,0);
@@ -17,6 +21,12 @@ void DIYRigidBody::Update(glm::vec3 gravity, float deltaTime)
 	{
 		velocity += acceleration * deltaTime;
 		velocity += gravity * deltaTime;
+		
+		//Cap velocity to prevent tunelling
+		if (velocity.length() > maxSpeed)
+		{
+			velocity = glm::normalize(velocity) * maxSpeed;
+		}
 		position += velocity * deltaTime;
 		acceleration = glm::vec3(0);
 	}
@@ -59,4 +69,18 @@ void DIYRigidBody::Move(glm::vec3 pos)
 DIYRigidBody::~DIYRigidBody()
 {
 
+}
+
+float DIYRigidBody::GetMass()
+{
+	if (staticObject == false)
+		return mass;
+	else
+		return 100000;
+}
+
+void DIYRigidBody::AddVelocity(glm::vec3 vel)
+{
+	if (staticObject == false)
+		velocity = vel;
 }

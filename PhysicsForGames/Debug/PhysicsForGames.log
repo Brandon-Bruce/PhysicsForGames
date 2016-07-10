@@ -1,1 +1,2 @@
-﻿LINK : fatal error LNK1104: cannot open file 'glfw3.lib'
+﻿  CollisionChecker.cpp
+  PhysicsForGames.vcxproj -> C:\GitHub\PhysicsForGames\Debug\PhysicsForGames.exe

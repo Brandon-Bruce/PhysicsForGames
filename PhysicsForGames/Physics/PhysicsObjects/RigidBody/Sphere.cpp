@@ -2,9 +2,9 @@
 #include "Gizmos.h"
 
 Sphere::Sphere(glm::vec4 colour,
-	glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float mass, bool staticObject,
+	glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float maxSpeed, float mass, bool staticObject,
 	float radius) :
-	DIYRigidBody(ShapeType::SPHERE, colour, position, rotation, velocity, mass, staticObject),
+	DIYRigidBody(ShapeType::SPHERE, colour, position, rotation, velocity, maxSpeed, mass, staticObject),
 	radius(radius)
 {
 

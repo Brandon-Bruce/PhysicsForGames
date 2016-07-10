@@ -34,25 +34,30 @@ bool Physics::startup()
 	m_renderer = new Renderer();
 
 	// Initiate gravity
-	gravity = glm::vec3(0, -0.0001, 0);
+	gravity = glm::vec3(0, -1.0f, 0);
 
 	//Make Actors
-	Sphere* sphere1;
-	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5, true, 1);
-	actors.push_back(sphere1);
-	Sphere* sphere2;
-	sphere2 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(-1, 0, 0), 5, false, 1);
-	actors.push_back(sphere2);
+	Sphere* sphere;
+	sphere = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5.0f, 1, true, 1);
+	actors.push_back(sphere);
+	sphere = nullptr;
+
+	sphere = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(-5, 0, 0), 5.0f, 1, false, 1);
+	actors.push_back(sphere);
+	sphere = nullptr;
 
 	Plane* plane;
-	plane = new Plane(glm::vec4(1, 1, 1, 1), glm::vec3(0.f, 1.f, 0.f), 1, &m_camera);
+	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 1);
 	actors.push_back(plane);
+	plane = nullptr;
 
-	plane = new Plane(glm::vec4(1, 1, 1, 1), glm::vec3(1.f, 0.f, 0.f), 20, &m_camera);
+	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(1.f, 0.f, 0.f), 20);
 	actors.push_back(plane);
+	plane = nullptr;
 	
-	plane = new Plane(glm::vec4(1, 1, 1, 1), glm::vec3(-1.f, 0.f, 0.f), 20, &m_camera);
+	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(-1.f, 0.f, 0.f), 20);
 	actors.push_back(plane);
+	plane = nullptr;
 	
     return true;
 }

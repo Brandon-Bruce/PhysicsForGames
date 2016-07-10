@@ -28,6 +28,7 @@ public:
 	virtual void AddVelocity(glm::vec3 vel) = 0;
 	virtual void Move(glm::vec3 pos) = 0;
 
+	bool staticObject;
 protected:
 	ShapeType shapeID;
 	glm::vec4 color;

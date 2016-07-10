@@ -7,7 +7,7 @@ class Sphere : public DIYRigidBody
 {
 public:
 	Sphere(glm::vec4 colour,
-		glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float mass, bool staticObject,
+		glm::vec3 position, glm::vec3 rotation, glm::vec3 velocity, float maxSpeed, float mass, bool staticObject,
 		float radius);
 	virtual void MakeGizmo();
 	~Sphere();

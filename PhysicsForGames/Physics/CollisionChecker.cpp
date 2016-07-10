@@ -4,6 +4,7 @@
 #include "Box.h"
 
 #include <glm\ext.hpp>
+#include <iostream>
 
 fn CollisionChecker::CollisionFunctionArray[] =
 {
@@ -14,12 +15,28 @@ fn CollisionChecker::CollisionFunctionArray[] =
 
 void CollisionChecker::Seperate(PhysicsObject* obj1, PhysicsObject* obj2, float overlap, glm::vec3 normal)
 {
+	assert(obj1->staticObject == false || obj2->staticObject == false);
 	float totalMass = obj1->GetMass() + obj2->GetMass();
 	float massRatio1 = obj1->GetMass() / totalMass;
 	float massRatio2 = obj2->GetMass() / totalMass;
 
+	//correct ratio issues if object1 is static
+	if (obj1->staticObject == true)
+	{
+		massRatio1 = 1.f;
+		massRatio2 = 0;
+	}
+	//correct ratio issues if object2 is static
+	else if (obj2->staticObject == true)
+	{
+		massRatio2 = 1.f;
+		massRatio1 = 0;
+	}
+
 	//seperate relative to mass of objects
 	glm::vec3 separationVec = normal * overlap;
+	printf("totalMass: %f mass1: %f mass2: %f\nseperation: %f,%f,%f\n",
+		totalMass, massRatio1, massRatio2, separationVec.x, separationVec.y, separationVec.z);
 	obj1->Move(-separationVec * massRatio2);
 	obj2->Move(separationVec * massRatio1);
 }
@@ -30,14 +47,17 @@ void CollisionChecker::CalculateResponse(PhysicsObject* obj1, PhysicsObject* obj
 
 	const float coefficientOfRestitution = 0.5f;
 
+	float object1Mass = obj1->GetMass();
+	float object2Mass = obj2->GetMass();
 	glm::vec3 relativeVel = obj2->GetVelocity() - obj1->GetVelocity();
 	float velocityAlongNormal = glm::dot(relativeVel, normal);
 	float impulseAmount = -(1 - coefficientOfRestitution) * velocityAlongNormal;
-	impulseAmount /= 1 / obj1->GetMass() + 1 / obj2->GetMass();
+	impulseAmount /= 1 / object1Mass + 1 / object2Mass;
+
 
 	glm::vec3 impulse = impulseAmount * normal;
-	obj1->AddVelocity(1 / obj1->GetMass() * -impulse);
-	obj2->AddVelocity(1 / obj2->GetMass() * +impulse);
+	obj1->AddVelocity(1 / object1Mass * -impulse);
+	obj2->AddVelocity(1 / object2Mass * +impulse);
 }
 
 bool CollisionChecker::Plane2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
@@ -64,19 +84,19 @@ bool CollisionChecker::Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 	//if successful check for collision
 	if (sphere != nullptr && plane != nullptr)
 	{
+		//get planes normal
 		glm::vec3 planeNormal = plane->GetNormal();
-		glm::vec3 collisionNormal = planeNormal;
-		float sphereToPlane = glm::dot(sphere->GetPosition(), planeNormal);
-
-		// if behind plane flip normal
+		float sphereToPlane = glm::dot(sphere->GetPosition(), planeNormal) - plane->GetDistance();
+		//flip normal if behind plane
 		if (sphereToPlane < 0)
 		{
+			planeNormal *= -1;
 			sphereToPlane *= -1;
-			collisionNormal *= -1;
 		}
 
+
 		//check if sphere radius is bigger then distance to plane
-		float intersection = (sphere->GetRadius() + plane->GetDistance()) - sphereToPlane;
+		float intersection = sphere->GetRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
 			CalculateResponse(obj1, obj2, intersection, planeNormal);
@@ -103,7 +123,8 @@ bool CollisionChecker::Sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = totalRadius - distanceApart;
 		if (intersection > 0)
 		{
-			CalculateResponse(obj1, obj2, intersection, glm::normalize(delta));
+			glm::vec3 collisionNormal = glm::normalize(delta);
+			CalculateResponse(obj1, obj2, intersection, collisionNormal);
 			return true;
 		}
 	}
