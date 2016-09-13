@@ -162,6 +162,7 @@
     <ClInclude Include="Physics\PhysicsObjects\Plane.h" />
     <ClInclude Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.h" />
     <ClInclude Include="Physics\PhysicsObjects\RigidBody\Sphere.h" />
+    <ClInclude Include="Physics\PhysicsObjects\SpringJoint.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Physics\PhysicsObjects\Plane.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\RigidBody\Sphere.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\SpringJoint.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -3,8 +3,6 @@
 
 #include <glm\vec3.hpp>
 
-#define NUMBERSHAPE 3
-
 class PhysicsObject;
 
 //function pointer for array

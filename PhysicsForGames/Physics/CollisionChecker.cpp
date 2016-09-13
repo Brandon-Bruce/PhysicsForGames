@@ -4,13 +4,14 @@
 #include "Box.h"
 
 #include <glm\ext.hpp>
-#include <iostream>
 
 fn CollisionChecker::CollisionFunctionArray[] =
 {
-	nullptr, CollisionChecker::Plane2Sphere, CollisionChecker::Plane2Box,
-	CollisionChecker::Sphere2Plane, CollisionChecker::Sphere2Sphere, CollisionChecker::Sphere2Box,
-	CollisionChecker::Box2Plane, CollisionChecker::Box2Sphere, CollisionChecker::Box2Box
+	//Plane							//Sphere							//Box							//Spring
+	nullptr,						CollisionChecker::Plane2Sphere,		CollisionChecker::Plane2Box,	nullptr, //Plane
+	CollisionChecker::Sphere2Plane,	CollisionChecker::Sphere2Sphere,	CollisionChecker::Sphere2Box,	nullptr, //Sphere
+	CollisionChecker::Box2Plane,	CollisionChecker::Box2Sphere,		CollisionChecker::Box2Box,		nullptr, //Box
+	nullptr,						nullptr,							nullptr,						nullptr //Spring
 };
 
 void CollisionChecker::Seperate(PhysicsObject* obj1, PhysicsObject* obj2, float overlap, glm::vec3 normal)
@@ -35,8 +36,6 @@ void CollisionChecker::Seperate(PhysicsObject* obj1, PhysicsObject* obj2, float 
 
 	//seperate relative to mass of objects
 	glm::vec3 separationVec = normal * overlap;
-	printf("totalMass: %f mass1: %f mass2: %f\nseperation: %f,%f,%f\n",
-		totalMass, massRatio1, massRatio2, separationVec.x, separationVec.y, separationVec.z);
 	obj1->Move(-separationVec * massRatio2);
 	obj2->Move(separationVec * massRatio1);
 }
@@ -51,7 +50,7 @@ void CollisionChecker::CalculateResponse(PhysicsObject* obj1, PhysicsObject* obj
 	float object2Mass = obj2->GetMass();
 	glm::vec3 relativeVel = obj2->GetVelocity() - obj1->GetVelocity();
 	float velocityAlongNormal = glm::dot(relativeVel, normal);
-	float impulseAmount = -(1 - coefficientOfRestitution) * velocityAlongNormal;
+	float impulseAmount = -(1 + coefficientOfRestitution) * velocityAlongNormal;
 	impulseAmount /= 1 / object1Mass + 1 / object2Mass;
 
 
@@ -78,6 +77,7 @@ bool CollisionChecker::Plane2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 
 bool CollisionChecker::Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
+
 	// try to cast to sphere and plane
 	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
 	Plane* plane = dynamic_cast<Plane*>(obj2);
@@ -99,7 +99,7 @@ bool CollisionChecker::Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 		float intersection = sphere->GetRadius() - sphereToPlane;
 		if (intersection > 0)
 		{
-			CalculateResponse(obj1, obj2, intersection, planeNormal);
+			CalculateResponse(obj2, obj1, intersection, planeNormal);
 			return true;
 		}
 	}

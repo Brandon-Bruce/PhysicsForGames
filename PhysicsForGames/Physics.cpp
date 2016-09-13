@@ -10,6 +10,7 @@
 #include "PhysicsObject.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "SpringJoint.h"
 
 #include "CollisionChecker.h"
 
@@ -34,28 +35,55 @@ bool Physics::startup()
 	m_renderer = new Renderer();
 
 	// Initiate gravity
-	gravity = glm::vec3(0, -1.0f, 0);
+	gravity = glm::vec3(0, -1.f, 0);
 
 	//Make Actors
-	Sphere* sphere;
-	sphere = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5.0f, 1, true, 1);
-	actors.push_back(sphere);
-	sphere = nullptr;
+	Sphere* sphere1;
+	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5.0f, 1, true, 1);
+	actors.push_back(sphere1);
 
-	sphere = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(-5, 0, 0), 5.0f, 1, false, 1);
-	actors.push_back(sphere);
-	sphere = nullptr;
+	Sphere* sphere2;
+	sphere2 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(-3, 0, 0), 5.0f, 1, false, 1);
+	actors.push_back(sphere2);
 
+	Sphere* sphere3;
+	sphere3 = new Sphere(glm::vec4(1, 1, 0, 1), glm::vec3(10, 10, 10), glm::vec3(0, 0, 0), glm::vec3(-10, 0, -10), 5.0f, 1, false, 1);
+	actors.push_back(sphere3);
+
+	SpringJoint* spring;
+	spring = new SpringJoint(glm::vec4(1, 1, 1, 1), sphere1, sphere2, 100.f, 0.f);
+	actors.push_back(spring);
+	spring = nullptr;
+
+	//down
 	Plane* plane;
 	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 1);
 	actors.push_back(plane);
 	plane = nullptr;
 
+	//up
+	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 20);
+	actors.push_back(plane);
+	plane = nullptr;
+
+	//right
 	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(1.f, 0.f, 0.f), 20);
 	actors.push_back(plane);
 	plane = nullptr;
 	
-	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(-1.f, 0.f, 0.f), 20);
+	//left
+	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(-1.f, 0.f, 0.f), 20);
+	actors.push_back(plane);
+	plane = nullptr;
+
+
+	//back
+	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, -1.f), 20);
+	actors.push_back(plane);
+	plane = nullptr;
+
+	//forward
+	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, 1.f), 20);
 	actors.push_back(plane);
 	plane = nullptr;
 	
@@ -244,14 +272,18 @@ void Physics::CheckForCollisions()
 		{
 			PhysicsObject* object1 = actors[outer];
 			PhysicsObject* object2 = actors[inner];
-			int _shapeID1 = object1->GetShapeID();
-			int _shapeID2 = object2->GetShapeID();
-			// using function pointers
-			int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2;
-			fn collisionFucntionPtr = CollisionChecker::CollisionFunctionArray[functionIndex];
-			if (collisionFucntionPtr != nullptr)
+			if ((object1->layer == 0 || object2->layer == 0) ||
+				object1->layer != object2->layer)
 			{
-				collisionFucntionPtr(object1, object2);
+				int _shapeID1 = object1->GetShapeID();
+				int _shapeID2 = object2->GetShapeID();
+				// using function pointers
+				int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2;
+				fn collisionFucntionPtr = CollisionChecker::CollisionFunctionArray[functionIndex];
+				if (collisionFucntionPtr != nullptr)
+				{
+					collisionFucntionPtr(object1, object2);
+				}
 			}
 		}
 	}

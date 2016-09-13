@@ -23,7 +23,7 @@ void DIYRigidBody::Update(glm::vec3 gravity, float deltaTime)
 		velocity += gravity * deltaTime;
 		
 		//Cap velocity to prevent tunelling
-		if (velocity.length() > maxSpeed)
+		if (glm::length(velocity) > maxSpeed)
 		{
 			velocity = glm::normalize(velocity) * maxSpeed;
 		}
@@ -82,5 +82,5 @@ float DIYRigidBody::GetMass()
 void DIYRigidBody::AddVelocity(glm::vec3 vel)
 {
 	if (staticObject == false)
-		velocity = vel;
+		velocity += vel;
 }

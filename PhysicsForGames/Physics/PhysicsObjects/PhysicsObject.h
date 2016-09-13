@@ -4,11 +4,14 @@
 #include <glm\vec3.hpp>
 #include <glm\vec4.hpp>
 
+#define NUMBERSHAPE 4
+
 enum ShapeType
 {
 	PLANE = 0,
 	SPHERE = 1,
 	BOX = 2,
+	SPRING = 3,
 };
 
 class PhysicsObject
@@ -29,6 +32,8 @@ public:
 	virtual void Move(glm::vec3 pos) = 0;
 
 	bool staticObject;
+
+	int layer;
 protected:
 	ShapeType shapeID;
 	glm::vec4 color;
