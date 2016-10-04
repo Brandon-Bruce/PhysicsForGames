@@ -86,8 +86,63 @@ bool Physics::startup()
 	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, 1.f), 20);
 	actors.push_back(plane);
 	plane = nullptr;
-	
+
+	/**************
+	**PhysX stuff**
+	**************/
+	SetUpPhysX();
+	SetUpIntroToPhysX();
+
     return true;
+}
+
+void Physics::SetUpPhysX()
+{
+	m_defaultFilterShader = PxDefaultSimulationFilterShader;
+	m_physicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator,
+											m_defaultErrorCallback);
+	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_physicsFoundation,
+								PxTolerancesScale());
+	PxInitExtensions(*m_physics);
+	m_physicsMaterial = m_physics->createMaterial(1, 1, 0);
+	m_physicsCooker = PxCreateCooking(PX_PHYSICS_VERSION, *m_physicsFoundation,
+										PxCookingParams(PxTolerancesScale()));
+}
+
+PxScene* Physics::CreateDefaultScene()
+{
+	PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0, -9.807f, 0);
+	sceneDesc.filterShader = &PxDefaultSimulationFilterShader;
+	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(8);
+	PxScene* result = m_physics->createScene(sceneDesc);
+
+	return result;
+}
+
+void Physics::SetUpIntroToPhysX()
+{
+	m_physicsScene = CreateDefaultScene();
+
+	//add a plane
+	PxTransform pose = PxTransform(PxVec3(0.0f, 0.0f, 0.0f), PxQuat(PxHalfPi,
+													PxVec3(0.0f, 0.0f, 1.0f)));
+
+	PxRigidStatic* plane = PxCreateStatic(*m_physics, pose, PxPlaneGeometry(),
+		*m_physicsMaterial);
+
+	//Add it to the physX scene
+	m_physicsScene->addActor(*plane);
+
+	//add a box
+	float density = 10;
+	PxBoxGeometry box(2, 2, 2);
+	PxTransform trasnform(PxVec3(0, 5, 0));
+	PxRigidDynamic* dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
+													*m_physicsMaterial, density);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*dynamicActor);
 }
 
 void Physics::shutdown()
@@ -98,6 +153,10 @@ void Physics::shutdown()
 	delete m_renderer;
     Gizmos::destroy();
     Application::shutdown();
+
+	m_physicsScene->release();
+	m_physicsFoundation->release();
+	m_physics->release();
 }
 
 bool Physics::update()
@@ -135,8 +194,21 @@ bool Physics::update()
             i == 10 ? white : black);
     }
 
+	/***************
+	**PhysX update**
+	***************/
+	if(m_delta_time > 0)
+	{
+		m_physicsScene->simulate(dt > 0.033f ? 0.033f : dt);
+		while (m_physicsScene->fetchResults() == false)
+		{
+
+		}
+	}
+
     m_camera.update(1.0f / 60.0f);
 
+	renderGizmos(m_physicsScene);
 
     return true;
 }

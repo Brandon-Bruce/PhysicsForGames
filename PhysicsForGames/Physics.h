@@ -16,6 +16,9 @@ class Physics : public Application
 {
 public:
 	virtual bool startup();
+	void SetUpPhysX();
+	PxScene* CreateDefaultScene();
+	void SetUpIntroToPhysX();
 	virtual void shutdown();
     virtual bool update();
     virtual void draw();
@@ -29,6 +32,22 @@ public:
 
 	std::vector<PhysicsObject*> actors;
 	glm::vec3 gravity;
+
+	/**************
+	**PhysX stuff**
+	**************/
+	PxFoundation* m_physicsFoundation;
+	PxPhysics* m_physics;
+	PxScene* m_physicsScene;
+
+	PxDefaultErrorCallback m_defaultErrorCallback;
+	PxDefaultAllocator m_defaultAllocator;
+	PxSimulationFilterShader m_defaultFilterShader;
+
+	PxMaterial* m_physicsMaterial;
+	PxMaterial* m_boxMaterial;
+	PxCooking* m_physicsCooker;
+	PxControllerManager* m_controllerManager;
 };
 
 
