@@ -93,6 +93,7 @@ bool Physics::startup()
 	SetUpPhysX();
 	SetUpIntroToPhysX();
 
+	cooldown = 0;
     return true;
 }
 
@@ -134,12 +135,32 @@ void Physics::SetUpIntroToPhysX()
 	//Add it to the physX scene
 	m_physicsScene->addActor(*plane);
 
-	//add a box
-	float density = 10;
+	//add a box1
+	float density = 1.0f;
 	PxBoxGeometry box(2, 2, 2);
 	PxTransform trasnform(PxVec3(0, 5, 0));
 	PxRigidDynamic* dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
 													*m_physicsMaterial, density);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*dynamicActor);
+
+	//add a box2
+	density = 1.0f;
+	box = PxBoxGeometry(2, 2, 2);
+	trasnform = PxTransform(PxVec3(0, 10, 0));
+	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
+		*m_physicsMaterial, density);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*dynamicActor);
+
+	//add a box3
+	density = 1.0f;
+	box = PxBoxGeometry(2, 2, 2);
+	trasnform = PxTransform(PxVec3(0, 20, 0));
+	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
+		*m_physicsMaterial, density);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
@@ -208,9 +229,49 @@ bool Physics::update()
 
     m_camera.update(1.0f / 60.0f);
 
+	if (glfwGetKey(m_window, GLFW_KEY_SPACE))
+	{
+		GunFire();
+	}
+
 	renderGizmos(m_physicsScene);
 
     return true;
+}
+
+void Physics::GunFire()
+{
+	if (cooldown > 0)
+	{
+		cooldown -= m_delta_time;
+		return;
+	}
+	else
+	{
+		cooldown += 0.1f;
+	}
+
+	//Transform
+	vec3 camPos = m_camera.world[3].xyz();
+	vec3 boxVel = -m_camera.world[2].xyz() * 20.0f;
+	PxTransform boxTransform(PxVec3(camPos.x, camPos.y, camPos.z));
+
+	//Geometry
+	PxSphereGeometry sphere(0.5f);
+
+	//Density
+	float density = 10.0f;
+
+	PxRigidDynamic* newActor = PxCreateDynamic(*m_physics, boxTransform, sphere,
+													*m_physicsMaterial, density);
+	//set speed of bullet
+	float muzzlespeed = 50.0f;
+
+	//Set bullet velocity
+	glm::vec3 direction(-m_camera.world[2]);
+	physx::PxVec3 velocity = physx::PxVec3(direction.x, direction.y, direction.z) * muzzlespeed;
+	newActor->setLinearVelocity(velocity, true);
+	m_physicsScene->addActor(*newActor);
 }
 
 void Physics::draw()

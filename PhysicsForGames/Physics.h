@@ -21,6 +21,7 @@ public:
 	void SetUpIntroToPhysX();
 	virtual void shutdown();
     virtual bool update();
+	void GunFire();
     virtual void draw();
 
 	void renderGizmos(PxScene* physics_scene);
@@ -48,6 +49,9 @@ public:
 	PxMaterial* m_boxMaterial;
 	PxCooking* m_physicsCooker;
 	PxControllerManager* m_controllerManager;
+
+	//Gun
+	float cooldown;
 };
 
 

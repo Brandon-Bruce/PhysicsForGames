@@ -1,9 +1,5 @@
-﻿  Physics.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  main.cpp
-PhysX3ExtensionsDEBUG.lib(ExtRigidBodyExt.obj) : warning LNK4099: PDB 'PhysX3ExtensionsDEBUG.pdb' was not found with 'PhysX3ExtensionsDEBUG.lib(ExtRigidBodyExt.obj)' or at 'C:\Users\brandon.bruce\Documents\PhysicsForGames\Debug\PhysX3ExtensionsDEBUG.pdb'; linking object as if no debug info
-PhysX3ExtensionsDEBUG.lib(ExtSimpleFactory.obj) : warning LNK4099: PDB 'PhysX3ExtensionsDEBUG.pdb' was not found with 'PhysX3ExtensionsDEBUG.lib(ExtSimpleFactory.obj)' or at 'C:\Users\brandon.bruce\Documents\PhysicsForGames\Debug\PhysX3ExtensionsDEBUG.pdb'; linking object as if no debug info
+﻿cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
+  Physics.cpp
   PhysicsForGames.vcxproj -> C:\Users\brandon.bruce\Documents\PhysicsForGames\Debug\PhysicsForGames.exe
   0 File(s) copied
   0 File(s) copied
