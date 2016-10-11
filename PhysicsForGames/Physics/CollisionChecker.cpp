@@ -133,20 +133,62 @@ bool CollisionChecker::Sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 
 bool CollisionChecker::Sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
-	return false;
+	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
+	Box* box = dynamic_cast<Box*>(obj2);
+
+	if (sphere != nullptr && box != nullptr)
+	{
+
+	}
 }
 
 bool CollisionChecker::Box2Plane(PhysicsObject * obj1, PhysicsObject * obj2)
 {
-	return false;
+	return Plane2Box(obj2, obj1);
 }
 
 bool CollisionChecker::Box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 {
-	return false;
+	return Sphere2Box(obj2, obj1);
 }
 
 bool CollisionChecker::Box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
+	Box* box1 = dynamic_cast<Box*>(obj1);
+	Box* box2 = dynamic_cast<Box*>(obj2);
+
+	if (box1 != nullptr && box2 != nullptr)
+	{
+		glm::vec3 box1Min = box1->GetPosition() - box1->GetExtents();
+		glm::vec3 box2Min = box2->GetPosition() - box2->GetExtents();
+
+		glm::vec3 box1Max = box1->GetPosition() + box1->GetExtents();
+		glm::vec3 box2Max = box2->GetPosition() + box2->GetExtents();
+
+		glm::vec3 intersectionMax = box1Min - box2Max;
+		glm::vec3 intersectionMin = box1Max - box2Min;
+
+		if (!(intersectionMax.x > 0 ||
+			intersectionMax.y > 0 ||
+			intersectionMax.z > 0 ||
+			intersectionMin.x < 0 ||
+			intersectionMin.y < 0 ||
+			intersectionMin.z < 0))
+		{
+			glm::vec3 intersection = glm::vec3(
+				(std::abs(intersectionMax.x) < std::abs(intersectionMin.x) ? intersectionMax.x : intersectionMin.x),
+				(std::abs(intersectionMax.y) < std::abs(intersectionMin.y) ? intersectionMax.y : intersectionMin.y),
+				(std::abs(intersectionMax.z) < std::abs(intersectionMin.z) ? intersectionMax.z : intersectionMin.z));
+
+			intersection.x = std::abs(intersection.x) < std::abs(intersection.y) ? intersection.x : 0;
+			intersection.y = std::abs(intersection.y) < std::abs(intersection.z) ? intersection.y : 0;
+			intersection.z = std::abs(intersection.z) < std::abs(intersection.x) ? intersection.z : 0;
+
+			float overlap = glm::length(intersection);
+
+			CalculateResponse(obj1, obj2, overlap, glm::normalize(intersection));
+			return true;
+		}
+	}
 	return false;
 }

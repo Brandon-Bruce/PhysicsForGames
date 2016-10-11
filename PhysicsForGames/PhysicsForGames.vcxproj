@@ -171,6 +171,7 @@ XCOPY "$(ProjectDir)lib\physx\*.dll" "$(SolutionDir)$(Configuration)\" /D</Comma
     <ClInclude Include="Physics\CollisionChecker.h" />
     <ClInclude Include="Physics\PhysicsObjects\PhysicsObject.h" />
     <ClInclude Include="Physics\PhysicsObjects\Plane.h" />
+    <ClInclude Include="Physics\PhysicsObjects\RigidBody\Box.h" />
     <ClInclude Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.h" />
     <ClInclude Include="Physics\PhysicsObjects\RigidBody\Sphere.h" />
     <ClInclude Include="Physics\PhysicsObjects\SpringJoint.h" />
@@ -191,6 +192,7 @@ XCOPY "$(ProjectDir)lib\physx\*.dll" "$(SolutionDir)$(Configuration)\" /D</Comma
     <ClCompile Include="Physics\CollisionChecker.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\PhysicsObject.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\Plane.cpp" />
+    <ClCompile Include="Physics\PhysicsObjects\RigidBody\Box.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\RigidBody\DIYRigidBody.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\RigidBody\Sphere.cpp" />
     <ClCompile Include="Physics\PhysicsObjects\SpringJoint.cpp" />

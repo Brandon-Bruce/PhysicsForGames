@@ -11,8 +11,11 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "SpringJoint.h"
+#include "Box.h"
 
 #include "CollisionChecker.h"
+
+#include "Ragdoll.h"
 
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
@@ -26,7 +29,7 @@ bool Physics::startup()
 	
     glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-    Gizmos::create();
+	Gizmos::create(150000U, 150000U);
 
     m_camera = FlyCamera(1280.0f / 720.0f, 10.0f);
     m_camera.setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
@@ -47,8 +50,16 @@ bool Physics::startup()
 	actors.push_back(sphere2);
 
 	Sphere* sphere3;
-	sphere3 = new Sphere(glm::vec4(1, 1, 0, 1), glm::vec3(10, 10, 10), glm::vec3(0, 0, 0), glm::vec3(-10, 0, -10), 5.0f, 1, false, 1);
+	sphere3 = new Sphere(glm::vec4(1, 1, 0, 1), glm::vec3(-10, 30, 0), glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), 5.0f, 1, false, 1);
 	actors.push_back(sphere3);
+
+	Box* box1;
+	box1 = new Box(glm::vec4(1, 0, 1, 0), glm::vec3(-10, 5, 0), glm::vec3(0, 0, 0), 5.0f, 1, true, glm::vec3(2, 2, 2));
+	actors.push_back(box1);
+
+	Box* box2;
+	box2 = new Box(glm::vec4(1, 0, 1, 0), glm::vec3(-7.5f, 20, 0), glm::vec3(0, 0, 0), 5.0f, 1, false, glm::vec3(2, 2, 2));
+	actors.push_back(box2);
 
 	SpringJoint* spring;
 	spring = new SpringJoint(glm::vec4(1, 1, 1, 1), sphere1, sphere2, 100.f, 0.f);
@@ -58,11 +69,6 @@ bool Physics::startup()
 	//down
 	Plane* plane;
 	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 1);
-	actors.push_back(plane);
-	plane = nullptr;
-
-	//up
-	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 20);
 	actors.push_back(plane);
 	plane = nullptr;
 
@@ -91,7 +97,9 @@ bool Physics::startup()
 	**PhysX stuff**
 	**************/
 	SetUpPhysX();
+	m_physicsScene = CreateDefaultScene();
 	SetUpIntroToPhysX();
+	MakeRagDoll();
 
 	cooldown = 0;
     return true;
@@ -123,8 +131,6 @@ PxScene* Physics::CreateDefaultScene()
 
 void Physics::SetUpIntroToPhysX()
 {
-	m_physicsScene = CreateDefaultScene();
-
 	//add a plane
 	PxTransform pose = PxTransform(PxVec3(0.0f, 0.0f, 0.0f), PxQuat(PxHalfPi,
 													PxVec3(0.0f, 0.0f, 1.0f)));
@@ -136,20 +142,19 @@ void Physics::SetUpIntroToPhysX()
 	m_physicsScene->addActor(*plane);
 
 	//add a box1
-	float density = 1.0f;
 	PxBoxGeometry box(2, 2, 2);
-	PxTransform trasnform(PxVec3(0, 5, 0));
-	PxRigidDynamic* dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
-													*m_physicsMaterial, density);
+	PxTransform trasnform(PxVec3(0, 5, -10));
+	PxRigidStatic* staticActor = PxCreateStatic(*m_physics, trasnform, box,
+													*m_physicsMaterial);
 
 	//add to PhysX scene
-	m_physicsScene->addActor(*dynamicActor);
+	m_physicsScene->addActor(*staticActor);
 
 	//add a box2
-	density = 1.0f;
+	float density = 1.0f;
 	box = PxBoxGeometry(2, 2, 2);
-	trasnform = PxTransform(PxVec3(0, 10, 0));
-	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
+	trasnform = PxTransform(PxVec3(0, 10, -10));
+	PxRigidDynamic* dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
 		*m_physicsMaterial, density);
 
 	//add to PhysX scene
@@ -158,12 +163,21 @@ void Physics::SetUpIntroToPhysX()
 	//add a box3
 	density = 1.0f;
 	box = PxBoxGeometry(2, 2, 2);
-	trasnform = PxTransform(PxVec3(0, 20, 0));
+	trasnform = PxTransform(PxVec3(0, 20, -10));
 	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
 		*m_physicsMaterial, density);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
+}
+
+void Physics::MakeRagDoll()
+{
+	PxArticulation* ragdoll;
+	ragdoll = Ragdoll::MakeRagDoll(m_physics, Ragdoll::ragdollData,
+		PxTransform(PxVec3(-20, 5, 0)), 0.1f, m_physicsMaterial);
+	m_physicsScene->addArticulation(*ragdoll);
+	ragdolls.push_back(ragdoll);
 }
 
 void Physics::shutdown()
@@ -251,6 +265,13 @@ void Physics::GunFire()
 		cooldown += 0.1f;
 	}
 
+	if (bullets.size() > 50)
+	{
+		PxRigidDynamic* actor = bullets.front();
+		actor->release();
+		bullets.pop();
+	}
+
 	//Transform
 	vec3 camPos = m_camera.world[3].xyz();
 	vec3 boxVel = -m_camera.world[2].xyz() * 20.0f;
@@ -272,6 +293,7 @@ void Physics::GunFire()
 	physx::PxVec3 velocity = physx::PxVec3(direction.x, direction.y, direction.z) * muzzlespeed;
 	newActor->setLinearVelocity(velocity, true);
 	m_physicsScene->addActor(*newActor);
+	bullets.push(newActor);
 }
 
 void Physics::draw()
@@ -393,6 +415,28 @@ void Physics::renderGizmos(PxScene* physics_scene)
         }
         delete[] links;
     }
+
+	for (auto articulation : ragdolls)
+	{
+		PxU32 nLinks = articulation->getNbLinks();
+		PxArticulationLink** links = new PxArticulationLink*[nLinks];
+		articulation->getLinks(links, nLinks);
+
+		//Render all shapes in physx actor
+		while (nLinks--)
+		{
+			PxArticulationLink* link = links[nLinks];
+			PxU32 nShapes = link->getNbShapes();
+			PxShape** shapes = new PxShape*[nShapes];
+			link->getShapes(shapes, nShapes);
+			while (nShapes--)
+			{
+				AddWidget(shapes[nShapes], link, geo_color);
+			}
+			delete[] shapes;
+		}
+		delete[] links;
+	}
 }
 
 void Physics::CheckForCollisions()

@@ -6,6 +6,7 @@
 #include "Render.h"
 
 #include <vector>
+#include <queue>
 #include <PxPhysicsAPI.h>
 #include <PxScene.h>
 
@@ -19,6 +20,7 @@ public:
 	void SetUpPhysX();
 	PxScene* CreateDefaultScene();
 	void SetUpIntroToPhysX();
+	void MakeRagDoll();
 	virtual void shutdown();
     virtual bool update();
 	void GunFire();
@@ -49,6 +51,9 @@ public:
 	PxMaterial* m_boxMaterial;
 	PxCooking* m_physicsCooker;
 	PxControllerManager* m_controllerManager;
+
+	std::vector<PxArticulation*> ragdolls;
+	std::queue<PxRigidDynamic*> bullets;
 
 	//Gun
 	float cooldown;
