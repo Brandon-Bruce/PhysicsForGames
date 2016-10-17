@@ -11,8 +11,7 @@ Box::Box(glm::vec4 color, glm::vec3 position, glm::vec3 velocity, float maxSpeed
 
 void Box::MakeGizmo()
 {
-	const glm::mat4 rotationMat = glm::rotate(0.f, rotation);
-	Gizmos::addAABBFilled(position, extents, color, &rotationMat);
+	Gizmos::addAABBFilled(position, extents, color);
 }
 
 

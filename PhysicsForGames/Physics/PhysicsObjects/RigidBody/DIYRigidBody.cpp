@@ -27,9 +27,10 @@ void DIYRigidBody::Update(glm::vec3 gravity, float deltaTime)
 		{
 			velocity = glm::normalize(velocity) * maxSpeed;
 		}
-		position += velocity * deltaTime;
-		acceleration = glm::vec3(0);
+
 	}
+	position += velocity * deltaTime;
+	acceleration = glm::vec3(0);
 }
 
 void DIYRigidBody::Debug()

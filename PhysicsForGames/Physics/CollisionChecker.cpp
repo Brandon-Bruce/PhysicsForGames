@@ -4,6 +4,7 @@
 #include "Box.h"
 
 #include <glm\ext.hpp>
+#include <algorithm>
 
 fn CollisionChecker::CollisionFunctionArray[] =
 {
@@ -64,20 +65,38 @@ bool CollisionChecker::Plane2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 	return Sphere2Plane(obj2, obj1);
 }
 
-bool CollisionChecker::Plane2Box(PhysicsObject * obj1, PhysicsObject * obj2)
+bool CollisionChecker::Plane2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Plane* plane = dynamic_cast<Plane*>(obj1);
 	Box* box = dynamic_cast<Box*>(obj2);
+
 	if (box != nullptr && plane != nullptr)
 	{
-		//detect collision
+		glm::vec3 min = box->GetPosition() - box->GetExtents();
+		glm::vec3 max = box->GetPosition() + box->GetExtents();
+		glm::vec3 planeNormal = plane->GetNormal();
+
+		//float distance = glm::dot(box->GetPosition(), planeNormal);
+		//if (distance < 0)
+		//{
+		//	planeNormal *= -1;
+		//}
+
+		float minDistance = glm::dot(min, planeNormal);
+		float maxDistance = glm::dot(max, planeNormal);
+		float intercept = -std::min(minDistance, maxDistance) - plane->GetDistance();
+
+		if (intercept > 0)
+		{
+			CalculateResponse(obj1, obj2, intercept, plane->GetNormal());
+			return true;
+		}
 	}
 	return false;
 }
 
 bool CollisionChecker::Sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
-
 	// try to cast to sphere and plane
 	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
 	Plane* plane = dynamic_cast<Plane*>(obj2);
@@ -131,28 +150,53 @@ bool CollisionChecker::Sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 	return false;
 }
 
-bool CollisionChecker::Sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
+bool CollisionChecker::Sphere2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Sphere* sphere = dynamic_cast<Sphere*>(obj1);
 	Box* box = dynamic_cast<Box*>(obj2);
 
 	if (sphere != nullptr && box != nullptr)
 	{
+		glm::vec3 offset = sphere->GetPosition() - box->GetPosition();
+		if (std::abs(offset.x) > 0)
+		{
+			offset.x = std::min(std::abs(offset.x), box->GetExtents().x) * (std::abs(offset.x) / offset.x);
+		}
+		if (std::abs(offset.y) > 0)
+		{
+			offset.y = std::min(std::abs(offset.y), box->GetExtents().y) * (std::abs(offset.y) / offset.y);
+		}
+		if (std::abs(offset.z) > 0)
+		{
+			offset.z = std::min(std::abs(offset.z), box->GetExtents().z) * (std::abs(offset.z) / offset.z);
+		}
 
+		glm::vec3 boxPoint = box->GetPosition() + offset;
+
+		offset = boxPoint - sphere->GetPosition();
+		float distance = glm::length(offset);
+
+		float interceptDistance = sphere->GetRadius() - distance;
+		if (interceptDistance > 0)
+		{
+			CalculateResponse(obj1, obj2, interceptDistance, glm::normalize(offset));
+			return true;
+		}
 	}
+	return false;
 }
 
-bool CollisionChecker::Box2Plane(PhysicsObject * obj1, PhysicsObject * obj2)
+bool CollisionChecker::Box2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	return Plane2Box(obj2, obj1);
 }
 
-bool CollisionChecker::Box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
+bool CollisionChecker::Box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	return Sphere2Box(obj2, obj1);
 }
 
-bool CollisionChecker::Box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
+bool CollisionChecker::Box2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 {
 	Box* box1 = dynamic_cast<Box*>(obj1);
 	Box* box2 = dynamic_cast<Box*>(obj2);

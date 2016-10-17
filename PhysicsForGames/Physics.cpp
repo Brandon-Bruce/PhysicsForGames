@@ -42,7 +42,7 @@ bool Physics::startup()
 
 	//Make Actors
 	Sphere* sphere1;
-	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 5.0f, 1, true, 1);
+	sphere1 = new Sphere(glm::vec4(1, 0, 1, 1), glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 5.0f, 1, true, 1);
 	actors.push_back(sphere1);
 
 	Sphere* sphere2;
@@ -54,11 +54,11 @@ bool Physics::startup()
 	actors.push_back(sphere3);
 
 	Box* box1;
-	box1 = new Box(glm::vec4(1, 0, 1, 0), glm::vec3(-10, 5, 0), glm::vec3(0, 0, 0), 5.0f, 1, true, glm::vec3(2, 2, 2));
+	box1 = new Box(glm::vec4(1, 0, 1, 0), glm::vec3(-10, 6, 0), glm::vec3(0, 0, 0), 5.0f, 1, true, glm::vec3(2, 2, 2));
 	actors.push_back(box1);
 
 	Box* box2;
-	box2 = new Box(glm::vec4(1, 0, 1, 0), glm::vec3(-7.5f, 20, 0), glm::vec3(0, 0, 0), 5.0f, 1, false, glm::vec3(2, 2, 2));
+	box2 = new Box(glm::vec4(1, 0, 1, 0), glm::vec3(-7.5, 20, 0), glm::vec3(-10, 1, 10), 5.0f, 1, false, glm::vec3(2, 2, 2));
 	actors.push_back(box2);
 
 	SpringJoint* spring;
@@ -68,7 +68,7 @@ bool Physics::startup()
 
 	//down
 	Plane* plane;
-	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 1);
+	plane = new Plane(glm::vec4(1, 0, 0, 1), glm::vec3(0.f, 1.f, 0.f), 2);
 	actors.push_back(plane);
 	plane = nullptr;
 
