@@ -165,6 +165,7 @@ XCOPY "$(ProjectDir)lib\physx\*.dll" "$(SolutionDir)$(Configuration)\" /D</Comma
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Gizmos.h" />
     <ClInclude Include="gl_core_4_4.h" />
+    <ClInclude Include="Physics\PhysX\MyCollisionCallback.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="ParticleFluidEmitter.h" />
     <ClInclude Include="Physics.h" />
@@ -186,6 +187,7 @@ XCOPY "$(ProjectDir)lib\physx\*.dll" "$(SolutionDir)$(Configuration)\" /D</Comma
     <ClCompile Include="Gizmos.cpp" />
     <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics\PhysX\MyCollisionCallback.cpp" />
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="ParticleFluidEmitter.cpp" />
     <ClCompile Include="Physics.cpp" />
