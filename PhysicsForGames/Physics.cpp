@@ -14,6 +14,7 @@
 #include "Box.h"
 
 #include "CollisionChecker.h"
+#include "MyCollisionCallback.h"
 
 #include "Ragdoll.h"
 
@@ -62,7 +63,7 @@ bool Physics::startup()
 	actors.push_back(box2);
 
 	SpringJoint* spring;
-	spring = new SpringJoint(glm::vec4(1, 1, 1, 1), sphere1, sphere2, 100.f, 0.f);
+	spring = new SpringJoint(glm::vec4(1, 1, 1, 1), sphere1, sphere2, 10.f, 0.f);
 	actors.push_back(spring);
 	spring = nullptr;
 
@@ -73,23 +74,23 @@ bool Physics::startup()
 	plane = nullptr;
 
 	//right
-	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(1.f, 0.f, 0.f), 20);
+	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(1.f, 0.f, 0.f), -20);
 	actors.push_back(plane);
 	plane = nullptr;
 	
 	//left
-	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(-1.f, 0.f, 0.f), 20);
+	plane = new Plane(glm::vec4(0, 1, 0, 1), glm::vec3(-1.f, 0.f, 0.f), -20);
 	actors.push_back(plane);
 	plane = nullptr;
 
 
 	//back
-	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, -1.f), 20);
+	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, -1.f), -20);
 	actors.push_back(plane);
 	plane = nullptr;
 
 	//forward
-	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, 1.f), 20);
+	plane = new Plane(glm::vec4(0, 0, 1, 1), glm::vec3(0.f, 0.f, 1.f), -20);
 	actors.push_back(plane);
 	plane = nullptr;
 
@@ -97,7 +98,7 @@ bool Physics::startup()
 	**PhysX stuff**
 	**************/
 	SetUpPhysX();
-	m_physicsScene = CreateDefaultScene();
+	CreateDefaultScene();
 	SetUpIntroToPhysX();
 	MakeRagDoll();
 
@@ -107,7 +108,6 @@ bool Physics::startup()
 
 void Physics::SetUpPhysX()
 {
-	m_defaultFilterShader = PxDefaultSimulationFilterShader;
 	m_physicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_defaultAllocator,
 											m_defaultErrorCallback);
 	m_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_physicsFoundation,
@@ -118,15 +118,18 @@ void Physics::SetUpPhysX()
 										PxCookingParams(PxTolerancesScale()));
 }
 
-PxScene* Physics::CreateDefaultScene()
+void Physics::CreateDefaultScene()
 {
 	PxSceneDesc sceneDesc(m_physics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0, -9.807f, 0);
-	sceneDesc.filterShader = &PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = &FilterGroup::myFliterShader;
 	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(8);
 	PxScene* result = m_physics->createScene(sceneDesc);
+	
+	PxSimulationEventCallback* collisionCallBack = new MyCollisionCallback();
+	result->setSimulationEventCallback(collisionCallBack);
 
-	return result;
+	m_physicsScene = result;
 }
 
 void Physics::SetUpIntroToPhysX()
@@ -138,6 +141,9 @@ void Physics::SetUpIntroToPhysX()
 	PxRigidStatic* plane = PxCreateStatic(*m_physics, pose, PxPlaneGeometry(),
 		*m_physicsMaterial);
 
+	plane->setName("Plane1");
+	FilterGroup::setUpFiltering(plane, FilterGroup::GROUND, FilterGroup::BOX | FilterGroup::BULLET);
+
 	//Add it to the physX scene
 	m_physicsScene->addActor(*plane);
 
@@ -146,6 +152,21 @@ void Physics::SetUpIntroToPhysX()
 	PxTransform trasnform(PxVec3(0, 5, -10));
 	PxRigidStatic* staticActor = PxCreateStatic(*m_physics, trasnform, box,
 													*m_physicsMaterial);
+	staticActor->setName("Box1");
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*staticActor);
+
+	//box 4
+	box;
+	trasnform = PxTransform(PxVec3(0, 20, -10));
+	staticActor = PxCreateStatic(*m_physics, trasnform, box,
+		*m_physicsMaterial);
+	staticActor->setName("Box2");
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND);
+
+	SetShapeAsTrigger(staticActor);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
@@ -153,9 +174,12 @@ void Physics::SetUpIntroToPhysX()
 	//add a box2
 	float density = 1.0f;
 	box = PxBoxGeometry(2, 2, 2);
-	trasnform = PxTransform(PxVec3(0, 10, -10));
+	trasnform = PxTransform(PxVec3(0, 30, -10));
 	PxRigidDynamic* dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
 		*m_physicsMaterial, density);
+
+	dynamicActor->setName("Box2");
+	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
@@ -163,9 +187,12 @@ void Physics::SetUpIntroToPhysX()
 	//add a box3
 	density = 1.0f;
 	box = PxBoxGeometry(2, 2, 2);
-	trasnform = PxTransform(PxVec3(0, 20, -10));
+	trasnform = PxTransform(PxVec3(0, 40, -9));
 	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
 		*m_physicsMaterial, density);
+
+	dynamicActor->setName("Box3");
+	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
@@ -177,7 +204,24 @@ void Physics::MakeRagDoll()
 	ragdoll = Ragdoll::MakeRagDoll(m_physics, Ragdoll::ragdollData,
 		PxTransform(PxVec3(-20, 5, 0)), 0.1f, m_physicsMaterial);
 	m_physicsScene->addArticulation(*ragdoll);
+	ragdoll->setName("RagDoll");
 	ragdolls.push_back(ragdoll);
+}
+
+void Physics::SetShapeAsTrigger(PxRigidActor* actor)
+{
+	PxRigidStatic* staticActor = actor->is<PxRigidStatic>();
+	assert(staticActor);
+
+	const PxU32 numShapes = staticActor->getNbShapes();
+	PxShape** shapes = (PxShape**)_aligned_malloc(sizeof(PxShape*)*numShapes, 16);
+	staticActor->getShapes(shapes, numShapes);
+
+	for (PxU32 i = 0; i < numShapes; ++i)
+	{
+		shapes[i]->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+		shapes[i]->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	}
 }
 
 void Physics::shutdown()
@@ -294,6 +338,10 @@ void Physics::GunFire()
 	newActor->setLinearVelocity(velocity, true);
 	m_physicsScene->addActor(*newActor);
 	bullets.push(newActor);
+
+	//set up collision callback for bullets
+	newActor->setName("Bullet");
+	FilterGroup::setUpFiltering(newActor, FilterGroup::BULLET, FilterGroup::GROUND | FilterGroup::BOX);
 }
 
 void Physics::draw()

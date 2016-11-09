@@ -18,9 +18,10 @@ class Physics : public Application
 public:
 	virtual bool startup();
 	void SetUpPhysX();
-	PxScene* CreateDefaultScene();
+	void CreateDefaultScene();
 	void SetUpIntroToPhysX();
 	void MakeRagDoll();
+	void SetShapeAsTrigger(PxRigidActor* actor);
 	virtual void shutdown();
     virtual bool update();
 	void GunFire();
@@ -45,7 +46,6 @@ public:
 
 	PxDefaultErrorCallback m_defaultErrorCallback;
 	PxDefaultAllocator m_defaultAllocator;
-	PxSimulationFilterShader m_defaultFilterShader;
 
 	PxMaterial* m_physicsMaterial;
 	PxMaterial* m_boxMaterial;

@@ -84,7 +84,7 @@ bool CollisionChecker::Plane2Box(PhysicsObject* obj1, PhysicsObject* obj2)
 
 		float minDistance = glm::dot(min, planeNormal);
 		float maxDistance = glm::dot(max, planeNormal);
-		float intercept = -std::min(minDistance, maxDistance) - plane->GetDistance();
+		float intercept = -std::min(minDistance, maxDistance) + plane->GetDistance();
 
 		if (intercept > 0)
 		{
