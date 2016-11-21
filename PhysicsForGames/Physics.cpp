@@ -17,6 +17,7 @@
 #include "MyCollisionCallback.h"
 
 #include "Ragdoll.h"
+#include "Fluid.h"
 
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
@@ -101,6 +102,7 @@ bool Physics::startup()
 	CreateDefaultScene();
 	SetUpIntroToPhysX();
 	MakeRagDoll();
+	m_particleEmmiter = Fluid::Create(m_physics, m_physicsScene);
 
 	cooldown = 0;
     return true;
@@ -158,7 +160,7 @@ void Physics::SetUpIntroToPhysX()
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
 
-	//box 4
+	//box 2
 	box;
 	trasnform = PxTransform(PxVec3(0, 20, -10));
 	staticActor = PxCreateStatic(*m_physics, trasnform, box,
@@ -171,24 +173,11 @@ void Physics::SetUpIntroToPhysX()
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
 
-	//add a box2
+	//add a box3
 	float density = 1.0f;
 	box = PxBoxGeometry(2, 2, 2);
 	trasnform = PxTransform(PxVec3(0, 30, -10));
 	PxRigidDynamic* dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
-		*m_physicsMaterial, density);
-
-	dynamicActor->setName("Box2");
-	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
-
-	//add to PhysX scene
-	m_physicsScene->addActor(*dynamicActor);
-
-	//add a box3
-	density = 1.0f;
-	box = PxBoxGeometry(2, 2, 2);
-	trasnform = PxTransform(PxVec3(0, 40, -9));
-	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
 		*m_physicsMaterial, density);
 
 	dynamicActor->setName("Box3");
@@ -196,6 +185,70 @@ void Physics::SetUpIntroToPhysX()
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
+
+	//add a box4
+	density = 1.0f;
+	box = PxBoxGeometry(2, 2, 2);
+	trasnform = PxTransform(PxVec3(0, 40, -9));
+	dynamicActor = PxCreateDynamic(*m_physics, trasnform, box,
+		*m_physicsMaterial, density);
+
+	dynamicActor->setName("Box");
+	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*dynamicActor);
+
+
+	//Test area for fluid
+	//Left
+	box = PxBoxGeometry(2, 2, 7);
+	trasnform = PxTransform(PxVec3(20, 2, 0));
+	staticActor = PxCreateStatic(*m_physics, trasnform, box,
+		*m_physicsMaterial);
+
+	staticActor->setName("Left");
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*staticActor);
+
+	//Right
+	box = PxBoxGeometry(2, 2, 7);
+	trasnform = PxTransform(PxVec3(30, 2, 0));
+	staticActor = PxCreateStatic(*m_physics, trasnform, box,
+		*m_physicsMaterial);
+
+	staticActor->setName("Right");
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*staticActor);
+
+	//Front
+	box = PxBoxGeometry(5, 2, 2);
+	trasnform = PxTransform(PxVec3(25, 2, -5));
+	staticActor = PxCreateStatic(*m_physics, trasnform, box,
+		*m_physicsMaterial);
+
+	staticActor->setName("Front");
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	
+	//add to PhysX scene
+	m_physicsScene->addActor(*staticActor);
+
+	//Back
+	box = PxBoxGeometry(5, 2, 2);
+	trasnform = PxTransform(PxVec3(25, 2, 5));
+	staticActor = PxCreateStatic(*m_physics, trasnform, box,
+		*m_physicsMaterial);
+
+	staticActor->setName("Back");
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+
+	//add to PhysX scene
+	m_physicsScene->addActor(*staticActor);
+
 }
 
 void Physics::MakeRagDoll()
@@ -290,6 +343,13 @@ bool Physics::update()
 	if (glfwGetKey(m_window, GLFW_KEY_SPACE))
 	{
 		GunFire();
+	}
+
+	if (m_particleEmmiter)
+	{
+		m_particleEmmiter->update(m_delta_time);
+		//render particles
+		m_particleEmmiter->renderParticles();
 	}
 
 	renderGizmos(m_physicsScene);

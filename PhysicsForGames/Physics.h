@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "Camera.h"
 #include "Render.h"
+#include "ParticleFluidEmitter.h"
 
 #include <vector>
 #include <queue>
@@ -54,6 +55,8 @@ public:
 
 	std::vector<PxArticulation*> ragdolls;
 	std::queue<PxRigidDynamic*> bullets;
+
+	ParticleFluidEmitter* m_particleEmmiter;
 
 	//Gun
 	float cooldown;
