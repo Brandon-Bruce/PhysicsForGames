@@ -21,6 +21,7 @@ public:
 	void SetUpPhysX();
 	void CreateDefaultScene();
 	void SetUpIntroToPhysX();
+	void SetUpController();
 	void MakeRagDoll();
 	void SetShapeAsTrigger(PxRigidActor* actor);
 	virtual void shutdown();

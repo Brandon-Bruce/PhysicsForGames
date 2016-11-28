@@ -12,9 +12,9 @@ ParticleFluidEmitter* Fluid::Create(PxPhysics* physics, PxScene* scene)
 	pf->setRestParticleDistance(0.3f);
 	pf->setDynamicFriction(0.1f);
 	pf->setStaticFriction(0.1f);
-	pf->setDamping(0.1);
-	pf->setParticleMass(0.1);
-	pf->setRestitution(0);
+	pf->setDamping(0.1f);
+	pf->setParticleMass(0.1f);
+	pf->setRestitution(0.f);
 
 
 	pf->setParticleBaseFlag(PxParticleBaseFlag::eCOLLISION_TWOWAY, true);
@@ -23,7 +23,7 @@ ParticleFluidEmitter* Fluid::Create(PxPhysics* physics, PxScene* scene)
 	if (pf)
 	{
 		scene->addActor(*pf);
-		ParticleFluidEmitter* m_particleEmmiter = new ParticleFluidEmitter(maxParticles, PxVec3(25, 10, 0), pf, .1);
+		ParticleFluidEmitter* m_particleEmmiter = new ParticleFluidEmitter(maxParticles, PxVec3(25.f, 10.f, 0.f), pf, .1f);
 		m_particleEmmiter->setStartVelocityRange(-0.001f, -250.0f, -0.001f, 0.001f, -250.0f, 0.001f);
 
 		return m_particleEmmiter;

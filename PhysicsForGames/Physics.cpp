@@ -18,6 +18,7 @@
 
 #include "Ragdoll.h"
 #include "Fluid.h"
+#include "ControllerHitReport.h"
 
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
@@ -249,6 +250,25 @@ void Physics::SetUpIntroToPhysX()
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
 
+}
+
+void Physics::SetUpController()
+{
+	ControllerHitReport* myHitReport = new ControllerHitReport();
+	PxControllerManager* characterManager = PxCreateControllerManager(*m_physicsScene);
+	//describe controller
+	PxCapsuleControllerDesc desc;
+	desc.height = 1.6f;
+	desc.radius = 0.4f;
+	desc.position.set(0, 0, 0);
+	desc.material = m_physicsMaterial;
+	desc.reportCallback = myHitReport;
+	desc.density = 10;
+	//create layout controller
+	PxController* playerController = characterManager->createController(desc);
+	playerController->setPosition(PxExtendedVec3(5, 5, 5));
+	myHitReport->clearPlayerContactNormal(); //initialize contact normal
+	m_physicsScene->addActor(*playerController->getActor());
 }
 
 void Physics::MakeRagDoll()
