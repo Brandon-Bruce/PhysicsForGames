@@ -21,7 +21,8 @@ struct FilterGroup
 	{
 		GROUND = (1 << 0),
 		BOX = (1 << 1),
-		BULLET = (1 << 2)
+		BULLET = (1 << 2),
+		CHARACTER = (1 << 3)
 	};
 
 	static PxFilterFlags myFliterShader(PxFilterObjectAttributes attributes0, PxFilterData

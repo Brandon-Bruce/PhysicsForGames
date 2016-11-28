@@ -28,4 +28,8 @@ ParticleFluidEmitter* Fluid::Create(PxPhysics* physics, PxScene* scene)
 
 		return m_particleEmmiter;
 	}
+	else
+	{
+		return nullptr;
+	}
 }

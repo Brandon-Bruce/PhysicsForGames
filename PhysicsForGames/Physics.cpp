@@ -18,7 +18,6 @@
 
 #include "Ragdoll.h"
 #include "Fluid.h"
-#include "ControllerHitReport.h"
 
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
@@ -102,6 +101,8 @@ bool Physics::startup()
 	SetUpPhysX();
 	CreateDefaultScene();
 	SetUpIntroToPhysX();
+
+	SetUpController();
 	MakeRagDoll();
 	m_particleEmmiter = Fluid::Create(m_physics, m_physicsScene);
 
@@ -145,7 +146,7 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial);
 
 	plane->setName("Plane1");
-	FilterGroup::setUpFiltering(plane, FilterGroup::GROUND, FilterGroup::BOX | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(plane, FilterGroup::GROUND, FilterGroup::BOX | FilterGroup::BULLET | FilterGroup::CHARACTER);
 
 	//Add it to the physX scene
 	m_physicsScene->addActor(*plane);
@@ -156,7 +157,7 @@ void Physics::SetUpIntroToPhysX()
 	PxRigidStatic* staticActor = PxCreateStatic(*m_physics, trasnform, box,
 													*m_physicsMaterial);
 	staticActor->setName("Box1");
-	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND);
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::CHARACTER);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
@@ -167,7 +168,7 @@ void Physics::SetUpIntroToPhysX()
 	staticActor = PxCreateStatic(*m_physics, trasnform, box,
 		*m_physicsMaterial);
 	staticActor->setName("Box2");
-	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND);
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::CHARACTER);
 
 	SetShapeAsTrigger(staticActor);
 
@@ -182,7 +183,7 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial, density);
 
 	dynamicActor->setName("Box3");
-	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::CHARACTER);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
@@ -195,7 +196,7 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial, density);
 
 	dynamicActor->setName("Box");
-	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(dynamicActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::CHARACTER);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*dynamicActor);
@@ -209,7 +210,7 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial);
 
 	staticActor->setName("Left");
-	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::CHARACTER);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
@@ -221,7 +222,7 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial);
 
 	staticActor->setName("Right");
-	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::CHARACTER);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
@@ -233,7 +234,7 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial);
 
 	staticActor->setName("Front");
-	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::CHARACTER);
 	
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
@@ -245,16 +246,37 @@ void Physics::SetUpIntroToPhysX()
 		*m_physicsMaterial);
 
 	staticActor->setName("Back");
-	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET);
+	FilterGroup::setUpFiltering(staticActor, FilterGroup::BOX, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::CHARACTER);
 
 	//add to PhysX scene
 	m_physicsScene->addActor(*staticActor);
+
+	// check if PvdConnection manager is available on this platform
+	if (m_physics->getPvdConnectionManager() == NULL)
+		return;
+	// setup connection parameters
+	const char* pvd_host_ip = "127.0.0.1";
+	// IP of the PC which is running PVD
+	int port = 5425;
+	// TCP port to connect to, where PVD is listening
+	unsigned int timeout = 100;
+	// timeout in milliseconds to wait for PVD to respond, 
+	//consoles and remote PCs need a higher timeout.
+	PxVisualDebuggerConnectionFlags connectionFlags = PxVisualDebuggerExt::getAllConnectionFlags();
+	// and now try to connectPxVisualDebuggerExt
+	auto theConnection = PxVisualDebuggerExt::createConnection(
+		m_physics->getPvdConnectionManager(), pvd_host_ip, port, timeout, connectionFlags);
+
+
 
 }
 
 void Physics::SetUpController()
 {
-	ControllerHitReport* myHitReport = new ControllerHitReport();
+	_characterYVelocity = 0;
+	_playerGravity = -0.5f;
+	_characterRotation = 0;
+	myHitReport = new ControllerHitReport();
 	PxControllerManager* characterManager = PxCreateControllerManager(*m_physicsScene);
 	//describe controller
 	PxCapsuleControllerDesc desc;
@@ -265,10 +287,14 @@ void Physics::SetUpController()
 	desc.reportCallback = myHitReport;
 	desc.density = 10;
 	//create layout controller
-	PxController* playerController = characterManager->createController(desc);
+	playerController = characterManager->createController(desc);
 	playerController->setPosition(PxExtendedVec3(5, 5, 5));
 	myHitReport->clearPlayerContactNormal(); //initialize contact normal
-	m_physicsScene->addActor(*playerController->getActor());
+
+	PxRigidDynamic* actor = playerController->getActor();
+	actor->setName("Character Controller");
+	FilterGroup::setUpFiltering(actor, FilterGroup::CHARACTER, FilterGroup::GROUND | FilterGroup::BULLET | FilterGroup::BOX);
+	m_physicsScene->addActor(*actor);
 }
 
 void Physics::MakeRagDoll()
@@ -372,6 +398,8 @@ bool Physics::update()
 		m_particleEmmiter->renderParticles();
 	}
 
+	CharacterController();
+
 	renderGizmos(m_physicsScene);
 
     return true;
@@ -422,6 +450,53 @@ void Physics::GunFire()
 	//set up collision callback for bullets
 	newActor->setName("Bullet");
 	FilterGroup::setUpFiltering(newActor, FilterGroup::BULLET, FilterGroup::GROUND | FilterGroup::BOX);
+}
+
+void Physics::CharacterController()
+{
+	bool onGround; //set to true if we are on the ground
+	float movementSpeed = 10.0f; //forward and back movement speed
+	float rotationSpeed = 1.0f; //turn speed
+								//check if we have a contact normal.  if y is greater than .3 we assume this is solid ground.  This is a rather primitive way to do this.  Can you do better?
+	if (myHitReport->getPlayerContactNormal().y > 0.3f)
+	{
+		_characterYVelocity = -0.1f;
+		onGround = true;
+	}
+	else
+	{
+		_characterYVelocity += _playerGravity * m_delta_time;
+		onGround = false;
+	}
+	myHitReport->clearPlayerContactNormal();
+	const PxVec3 up(0, 1, 0);
+	//scan the keys and set up our intended velocity based on a global transform	
+	PxVec3 velocity(0, _characterYVelocity, 0);
+	if (glfwGetKey(this->m_window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		velocity.x -= movementSpeed*m_delta_time;
+	}
+	if (glfwGetKey(this->m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		velocity.x += movementSpeed*m_delta_time;
+	}
+	if (glfwGetKey(this->m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		_characterRotation -= rotationSpeed*m_delta_time;
+	}
+	if (glfwGetKey(this->m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		_characterRotation += rotationSpeed*m_delta_time;
+	}
+
+	//To do.. add code to control z movement and jumping
+	float minDistance = 0.001f;
+	PxControllerFilters filter;
+	//make controls relative to player facing
+	PxQuat rotation(_characterRotation, PxVec3(0, 1, 0));
+	//move the controller
+	playerController->move(rotation.rotate(velocity), minDistance, m_delta_time, filter);
+
 }
 
 void Physics::draw()

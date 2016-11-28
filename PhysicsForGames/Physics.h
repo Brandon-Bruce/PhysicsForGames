@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Render.h"
 #include "ParticleFluidEmitter.h"
+#include "ControllerHitReport.h"
 
 #include <vector>
 #include <queue>
@@ -27,6 +28,7 @@ public:
 	virtual void shutdown();
     virtual bool update();
 	void GunFire();
+	void CharacterController();
     virtual void draw();
 
 	void renderGizmos(PxScene* physics_scene);
@@ -61,6 +63,13 @@ public:
 
 	//Gun
 	float cooldown;
+
+	//ontroller Stuff
+	ControllerHitReport* myHitReport;
+	PxController* playerController;
+	float _characterYVelocity;
+	float _playerGravity;
+	PxReal _characterRotation;
 };
 
 
